@@ -1,3 +1,9 @@
+/**
+ * Apply es6 promise polyfill
+ */
+import {polyfill} from "es6-promise";
+polyfill();
+
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {Application} from "./components/application";

@@ -13,7 +13,7 @@ gulp.task("build:server", function () {
   var tsProject = gulpTypescript.createProject("tsconfig.json", {
     typescript: typescript
   });
-  return gulp.src("src/server/**/*.ts")
+  return gulp.src(["src/server/**/*.ts", "typings/**/*.ts"])
     .pipe(gulpTypescript(tsProject))
     .pipe(gulp.dest("build/"));
 });
@@ -27,6 +27,7 @@ gulp.task("build:client", function (callback) {
       errors: true,
       warnings: true,
       chunks: true,
+      modules: false,
       timings: true
     }));
     callback();

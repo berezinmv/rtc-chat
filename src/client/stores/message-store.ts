@@ -1,25 +1,11 @@
 import {Message} from "./message";
-import {Subscription} from "./subscription";
-import {SubscriberCallback} from "./subscriber-callback";
+import {AbstractStore} from "./abstract-store";
 
-class MessageStoreImpl {
+class MessageStoreImpl extends AbstractStore<Array<Message>> {
   private messages: Array<Message> = [];
-  private subscribers: Array<SubscriberCallback> = [];
 
-  private updateSubscribers() {
-    this.subscribers
-      .forEach((cb: SubscriberCallback) => cb(this.messages));
-  }
-
-  subscribe(callback: SubscriberCallback): Subscription {
-    this.subscribers.push(callback);
-    callback(this.messages);
-    return {
-      unsubscribe: () => {
-        this.subscribers = this.subscribers
-          .filter((cb: SubscriberCallback) => cb !== callback);
-      }
-    };
+  protected getData(): Array<Message> {
+    return this.messages;
   }
 
   addMessage(message: Message) {

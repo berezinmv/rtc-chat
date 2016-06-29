@@ -1,12 +1,35 @@
 import * as React from "react";
 import {Component} from "react";
+import {Message} from "../stores/message";
+import {MessageStore} from "../stores/message-store";
+import {Subscription} from "../stores/subscription";
 
 interface ChatProps {
 }
 interface ChatState {
+  messages: Array<Message>;
 }
 
 export class Chat extends Component<ChatProps, ChatState> {
+  private messageStoreSubscription: Subscription = null;
+
+  constructor(props: ChatProps) {
+    super(props);
+    this.state = {messages: []};
+  }
+
+  componentDidMount() {
+    this.messageStoreSubscription = MessageStore.subscribe(this.setMessages.bind(this));
+  }
+
+  componentWillUnmount() {
+    this.messageStoreSubscription && this.messageStoreSubscription.unsubscribe();
+  }
+
+  private setMessages(messages: Array<Message>) {
+    this.setState({messages: messages});
+  }
+
   render() {
     return (
       <div>

@@ -7,7 +7,7 @@ var del = require("del");
 
 gulp.task("default", ["build"]);
 
-gulp.task("build", ["build:server", "build:client"]);
+gulp.task("build", ["build:server", "build:client", "copy-html"]);
 
 gulp.task("build:server", function () {
   var tsProject = gulpTypescript.createProject("tsconfig.json", {
@@ -31,6 +31,11 @@ gulp.task("build:client", function (callback) {
     }));
     callback();
   });
+});
+
+gulp.task("copy-html", function () {
+  return gulp.src("src/index.html")
+    .pipe(gulp.dest("build/public"));
 });
 
 gulp.task("clean", function () {

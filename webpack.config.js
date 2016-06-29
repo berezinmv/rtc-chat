@@ -3,7 +3,7 @@
  */
 
 module.exports = {
-  entry: "./src/client/entry.ts",
+  entry: "./src/client/entry.tsx",
   output: {
     filename: "app.js",
     path: "build/public/",
@@ -13,12 +13,12 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         loader: "ts-loader"
       }
     ]
   },
   resolve: {
-    extensions: ["", ".ts", ".js"]
+    extensions: ["", ".ts", ".js", ".tsx", ".jsx"]
   }
 };

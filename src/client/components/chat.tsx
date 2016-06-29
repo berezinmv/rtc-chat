@@ -30,10 +30,16 @@ export class Chat extends Component<ChatProps, ChatState> {
     this.setState({messages: messages});
   }
 
+  private getMessages(): Array<Message> {
+    return this.state.messages;
+  }
+
   render() {
     return (
       <div>
         <h2>Chat</h2>
+        {this.getMessages().map((message: Message, index: number) =>
+          <p key={index}>{message.text}</p>)}
       </div>
     );
   }

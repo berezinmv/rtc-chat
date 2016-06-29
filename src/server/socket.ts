@@ -19,6 +19,9 @@ export function configureSocket(server: Server): void {
     socket.on("enter", (message: string) => {
       const parsedMessage: {name: string} = JSON.parse(message);
       const userName = parsedMessage.name;
+      if (userName == null && userName === "") {
+        return;
+      }
       const user: User = new User(clientId, userName);
       UserStorage.addUser(user);
     });

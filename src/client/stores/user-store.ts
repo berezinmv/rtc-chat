@@ -1,10 +1,11 @@
 import {User} from "../../server/users/user";
 import {Subscription} from "./subscription";
 import {WsService} from "../services/ws-service";
+import {SubscriberCallback} from "./subscriber-callback";
 
 class UserStoreImpl {
   private user: User = null;
-  private subscribers: Array<(u: User) => void> = [];
+  private subscribers: Array<SubscriberCallback> = [];
 
   constructor() {
     WsService.getClient()
@@ -20,12 +21,10 @@ class UserStoreImpl {
 
   private updateSubscribers() {
     this.subscribers
-      .forEach((subscriber: (user: User) => void) => {
-        subscriber(this.user);
-      });
+      .forEach((cb: SubscriberCallback) => cb(this.user));
   }
 
-  subscribe(callback: (u: User) => void): Subscription {
+  subscribe(callback: SubscriberCallback): Subscription {
     this.subscribers.push(callback);
     callback(this.user);
     return {

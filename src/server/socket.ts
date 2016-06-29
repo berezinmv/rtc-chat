@@ -17,6 +17,7 @@ export function configureSocket(server: Server): void {
     const clientId: string = client.id;
 
     socket.on("enter", (message: string) => {
+      console.log("Message: ", message);
       const parsedMessage: {name: string} = JSON.parse(message);
       const userName = parsedMessage.name;
       if (userName == null && userName === "") {
@@ -24,6 +25,8 @@ export function configureSocket(server: Server): void {
       }
       const user: User = new User(clientId, userName);
       UserStorage.addUser(user);
+      console.log("User: ", user);
+      socket.emit("user", JSON.stringify(user));
     });
 
     socket.on("disconnect", () => {

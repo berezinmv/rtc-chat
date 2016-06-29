@@ -1,4 +1,8 @@
 export class User {
+  static fromObject(userObject: {id: string, name: string}) {
+    return new User(userObject.id, userObject.name);
+  }
+
   private id: string;
   private name: string;
 

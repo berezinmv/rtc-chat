@@ -15,6 +15,8 @@ interface ChatState {
 }
 
 export class Chat extends Component<ChatProps, ChatState> {
+  private messageStore = MessageStore.getInstance();
+  private peerStore = PeerStore.getInstance();
   private messageStoreSubscription: Subscription = null;
   private peerStoreSubscription: Subscription = null;
 
@@ -24,8 +26,8 @@ export class Chat extends Component<ChatProps, ChatState> {
   }
 
   componentDidMount() {
-    this.messageStoreSubscription = MessageStore.getInstance().subscribe(this.setMessages.bind(this));
-    this.peerStoreSubscription = PeerStore.getInstance().subscribe(this.setUsers.bind(this));
+    this.messageStoreSubscription = this.messageStore.subscribe(this.setMessages.bind(this));
+    this.peerStoreSubscription = this.peerStore.subscribe(this.setUsers.bind(this));
   }
 
   componentWillUnmount() {
@@ -49,16 +51,36 @@ export class Chat extends Component<ChatProps, ChatState> {
     return [this.props.user].concat(this.state.users);
   }
 
+  private getMessageInput(): HTMLTextAreaElement {
+    return this.refs["message-input"] as HTMLTextAreaElement;
+  }
+
+  private getInputValue(): string {
+    return this.getMessageInput().value;
+  }
+
+  private sendMessage() {
+    const text = this.getInputValue();
+    if (text === "") {
+      return;
+    }
+    this.messageStore.sendMessage(text);
+  }
+
   render() {
     return (
       <div>
         <h2>Chat</h2>
+        <div>
+          <textarea ref="message-input" id="" cols="30" rows="10"/>
+          <button onClick={this.sendMessage.bind(this)}>Send message</button>
+        </div>
         <h3>Users</h3>
         {this.getUsers().map((user: User, index: number) =>
           <p key={index}>{user.getName()}</p>)}
         <h3>Messages</h3>
         {this.getMessages().map((message: Message, index: number) =>
-          <p key={index}>{message.text}</p>)}
+          <p key={index}>{message.user.name}: {message.text}</p>)}
       </div>
     );
   }

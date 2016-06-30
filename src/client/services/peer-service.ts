@@ -1,25 +1,14 @@
 import {WsService} from "./ws-service";
 import {UserStore} from "../stores/user-store";
+import {Peer} from "../peers/peer";
 
 export class PeerService {
-  private static sendMessage(type: string, data: any, user: any) {
+  static sendMessage(type: string, data: any, peer: Peer) {
     WsService.getClient().emit("webrtc", JSON.stringify({
-      user: UserStore.getInstance().getUser(),
-      receiver: user,
+      user: UserStore.getInstance().getUser().toUserInfo(),
+      receiver: peer.toUserInfo(),
       data: data,
       type: type
     }));
-  }
-
-  static sendCandidateMessage(candidate: RTCIceCandidate, user: any) {
-    PeerService.sendMessage("candidate", candidate, user);
-  }
-
-  static sendOfferMessage(description: RTCSessionDescription, user: any) {
-    PeerService.sendMessage("offer", description, user);
-  }
-
-  static sendAnswerMessage(description: RTCSessionDescription, user: any) {
-    PeerService.sendMessage("answer", description, user);
   }
 }

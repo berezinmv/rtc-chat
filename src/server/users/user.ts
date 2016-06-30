@@ -25,6 +25,6 @@ export class User {
   }
 
   toUserInfo(): UserInfo {
-    return {id: this.getId(), name: this.getName()};
+    return {id: this.id, name: this.name};
   }
 }

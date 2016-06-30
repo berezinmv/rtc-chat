@@ -17,10 +17,6 @@ export class Peer extends User {
     return this.connection;
   }
 
-  getChannel(): RTCDataChannel {
-    return this.channel;
-  }
-
   addCandidate(candidate: RTCIceCandidate) {
     this.candidates.push(candidate);
   }
@@ -30,11 +26,11 @@ export class Peer extends User {
   }
 
   sendString(message: string) {
-    this.getChannel().send(message);
+    this.channel.send(message);
   }
 
   close() {
-    this.getChannel().close();
-    this.getConnection().close();
+    this.channel && this.channel.close();
+    this.channel && this.channel.close();
   }
 }

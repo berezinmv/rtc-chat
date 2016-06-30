@@ -13,6 +13,7 @@ export interface ApplicationState {
 }
 
 export class Application extends Component<ApplicationProps, ApplicationState> {
+  private userStore = UserStore.getInstance();
   private userStoreSubscription: Subscription = null;
 
   constructor(props: ApplicationProps) {
@@ -21,7 +22,7 @@ export class Application extends Component<ApplicationProps, ApplicationState> {
   }
 
   componentDidMount() {
-    this.userStoreSubscription = UserStore.getInstance().subscribe(this.setUser.bind(this));
+    this.userStoreSubscription = this.userStore.subscribe(this.setUser.bind(this));
   }
 
   componentWillUnmount() {

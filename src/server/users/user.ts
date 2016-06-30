@@ -1,5 +1,10 @@
+export interface UserInfo {
+  id: string;
+  name: string;
+}
+
 export class User {
-  static fromObject(userObject: {id: string, name: string}) {
+  static fromObject(userObject: UserInfo) {
     return new User(userObject.id, userObject.name);
   }
 
@@ -17,5 +22,9 @@ export class User {
 
   getName(): string {
     return this.name;
+  }
+
+  toUserInfo(): UserInfo {
+    return {id: this.getId(), name: this.getName()};
   }
 }

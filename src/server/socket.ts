@@ -13,24 +13,39 @@ export function configureSocket(server: Server): void {
   const io = socket(server);
 
   io.on("connection", (socket: Socket) => {
-    const client: Client = socket.client;
-    const clientId: string = client.id;
+    const userId: string = socket.id;
 
-    socket.on("enter", (message: string) => {
-      console.log("Message: ", message);
-      const parsedMessage: {name: string} = JSON.parse(message);
-      const userName = parsedMessage.name;
+    socket.on("enter", (messageString: string) => {
+      console.log("enter", messageString);
+      const message: {name: string} = JSON.parse(messageString);
+      const userName = message.name;
       if (userName == null && userName === "") {
         return;
       }
-      const user: User = new User(clientId, userName);
+      const user: User = new User(userId, userName);
       UserStorage.addUser(user);
-      console.log("User: ", user);
-      socket.emit("user", JSON.stringify(user));
+      const userString = JSON.stringify(user);
+      socket.emit("user", userString);
+      socket.broadcast.emit("join", userString)
+    });
+
+    socket.on("webrtc", (messageString: string) => {
+      console.log("webrtc", messageString);
+      const message: any = JSON.parse(messageString);
+      const receiver: any = message.receiver;
+      const receiverId: string = receiver.id;
+      if (receiverId != null) {
+        if (UserStorage.getUser(receiverId)) {
+          socket.broadcast.to(receiverId).emit("webrtc", messageString);
+        }
+      } else {
+        socket.broadcast.emit("webrtc", messageString);
+      }
     });
 
     socket.on("disconnect", () => {
-      UserStorage.removeUser(clientId);
+      UserStorage.removeUser(userId);
+      socket.broadcast.emit("leave", userId);
     });
   });
 }

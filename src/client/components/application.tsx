@@ -21,7 +21,7 @@ export class Application extends Component<ApplicationProps, ApplicationState> {
   }
 
   componentDidMount() {
-    this.userStoreSubscription = UserStore.subscribe(this.setUser.bind(this));
+    this.userStoreSubscription = UserStore.getInstance().subscribe(this.setUser.bind(this));
   }
 
   componentWillUnmount() {
@@ -42,7 +42,7 @@ export class Application extends Component<ApplicationProps, ApplicationState> {
 
   render() {
     if (this.userExist()) {
-      return <Chat/>;
+      return <Chat user={this.getUser()}/>;
     } else {
       return <Login/>
     }

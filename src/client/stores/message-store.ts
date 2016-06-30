@@ -1,7 +1,17 @@
 import {Message} from "./message";
 import {AbstractStore} from "./abstract-store";
 
-class MessageStoreImpl extends AbstractStore<Array<Message>> {
+export class MessageStore extends AbstractStore<Array<Message>> {
+  private static instance: MessageStore = null;
+
+  static getInstance(): MessageStore {
+    if (!this.instance) {
+      this.instance = new MessageStore();
+    }
+    return this.instance;
+  }
+
+
   private messages: Array<Message> = [];
 
   protected getData(): Array<Message> {
@@ -13,5 +23,3 @@ class MessageStoreImpl extends AbstractStore<Array<Message>> {
     this.updateSubscribers();
   }
 }
-
-export const MessageStore = new MessageStoreImpl();

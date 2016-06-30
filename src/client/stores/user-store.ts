@@ -2,7 +2,16 @@ import {User} from "../../server/users/user";
 import {WsService} from "../services/ws-service";
 import {AbstractStore} from "./abstract-store";
 
-class UserStoreImpl extends AbstractStore<User> {
+export class UserStore extends AbstractStore<User> {
+  private static instance: UserStore = null;
+
+  static getInstance(): UserStore {
+    if (!this.instance) {
+      this.instance = new UserStore();
+    }
+    return this.instance;
+  }
+
   private user: User = null;
 
   constructor() {
@@ -21,6 +30,13 @@ class UserStoreImpl extends AbstractStore<User> {
     this.user = user;
     this.updateSubscribers();
   }
-}
 
-export const UserStore = new UserStoreImpl();
+  getUser(): User {
+    return this.user;
+  }
+
+  getUserId(): string {
+    const user = this.getUser();
+    return user ? user.getId() : null;
+  }
+}

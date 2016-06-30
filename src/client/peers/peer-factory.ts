@@ -43,12 +43,6 @@ export class PeerFactory {
     const channel = connection.createDataChannel("data", {});
     this.bindChannelEvents(channel);
     peer.setChannel(channel);
-    peer.getChannel().onopen = () => {
-      console.log("open");
-      setInterval(() => {
-        peer.sendString(`${peer.getName()}: test message`)
-      }, 1000);
-    };
     connection.createOffer((description: RTCSessionDescription) => {
       connection.setLocalDescription(description);
     }, (err: DOMError) => console.error(err));

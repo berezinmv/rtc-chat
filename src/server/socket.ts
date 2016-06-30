@@ -16,7 +16,6 @@ export function configureSocket(server: Server): void {
     const userId: string = socket.id;
 
     socket.on("enter", (messageString: string) => {
-      console.log("enter", messageString);
       const message: {name: string} = JSON.parse(messageString);
       const userName = message.name;
       if (userName == null && userName === "") {
@@ -30,7 +29,6 @@ export function configureSocket(server: Server): void {
     });
 
     socket.on("webrtc", (messageString: string) => {
-      console.log("webrtc", messageString);
       const message: any = JSON.parse(messageString);
       const receiver: any = message.receiver;
       const receiverId: string = receiver.id;

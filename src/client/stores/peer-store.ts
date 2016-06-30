@@ -41,7 +41,6 @@ export class PeerStore extends AbstractStore<Array<Peer>> {
             this.addPeer(peer);
             break;
           case "offer":
-            console.log("offer");
             peer = PeerFactory.createRemote(user);
             const connection = peer.getConnection();
             connection.setRemoteDescription(new SessionDescription(data));
@@ -49,7 +48,6 @@ export class PeerStore extends AbstractStore<Array<Peer>> {
             this.addPeer(peer);
             break;
           case "answer":
-            console.log("answer");
             this.getPeer(user).getConnection().setRemoteDescription(new SessionDescription(data));
             break;
         }

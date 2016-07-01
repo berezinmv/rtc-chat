@@ -54,7 +54,6 @@ export class PeerFactory {
     const connection = this.prepareConnection(peer, "answer");
     peer.setConnection(connection);
     connection.ondatachannel = (event: RTCDataChannelEvent) => {
-      console.log("ondatachannel");
       const channel = event.channel;
       this.bindChannelEvents(channel, peer);
       peer.setChannel(channel);
@@ -90,7 +89,6 @@ export class PeerFactory {
     let chunks: Array<string> = [];
     channel.onmessage = (messageEvent: RTCMessageEvent) => {
       const dataObject = JSON.parse(messageEvent.data);
-      console.log(dataObject);
       const type = dataObject.type;
       const data = dataObject.data;
       switch (type) {
@@ -103,7 +101,6 @@ export class PeerFactory {
           break;
         case "file":
           const fileName = data.fileName;
-          console.log("file", fileName);
           chunks.push(data.message); // pushing chunks in array
 
           if (data.last) {

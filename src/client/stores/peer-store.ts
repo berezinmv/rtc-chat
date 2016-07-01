@@ -26,7 +26,6 @@ export class PeerStore extends AbstractStore<Array<Peer>> {
         const connection = peer.getConnection();
         connection.createOffer().then((description: RTCSessionDescription) => {
           connection.setLocalDescription(description).then(() => {
-            console.log("setLocal");
           }, (err: DOMError) => console.error(err));
         }, (err: DOMError) => console.error(err));
       })
@@ -58,9 +57,7 @@ export class PeerStore extends AbstractStore<Array<Peer>> {
   protected handleCandidate(data: any, user: UserInfo) {
     const peer = PeerFactory.createRemote(user);
     peer.getConnection().addIceCandidate(new RTCIceCandidate(data))
-      .then(() => {
-        console.log("addIceCandidate");
-      }, (err: DOMError) => console.error(err));
+      .then(() => {}, (err: DOMError) => console.error(err));
   }
 
   /**
@@ -72,10 +69,8 @@ export class PeerStore extends AbstractStore<Array<Peer>> {
     const peer = PeerFactory.createRemote(user);
     const connection = peer.getConnection();
     connection.setRemoteDescription(new RTCSessionDescription(data)).then(() => {
-      console.log("setRemote");
       connection.createAnswer().then((description: RTCSessionDescription) => {
         connection.setLocalDescription(description).then(() => {
-          console.log("setLocal");
         }, (err: DOMError) => console.error(err));
       }, (err: DOMError) => console.error(err));
     }, (err: DOMError) => console.error(err));
@@ -90,9 +85,7 @@ export class PeerStore extends AbstractStore<Array<Peer>> {
   protected handleAnswer(data: any, user: UserInfo) {
     this.getPeer(user.id).getConnection()
       .setRemoteDescription(new RTCSessionDescription(data))
-      .then(() => {
-        console.log("setRemote");
-      });
+      .then(() => {});
   }
 
   protected getData(): Array<Peer> {

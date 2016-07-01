@@ -30,7 +30,6 @@ export function configureSocket(server: Server): void {
 
     socket.on("webrtc", (messageString: string) => {
       const message: any = JSON.parse(messageString);
-      console.log("webrtc", message.type, message.user, message.receiver, message.data);
       const receiver: any = message.receiver;
       const receiverId: string = receiver.id;
       if (receiverId != null) {

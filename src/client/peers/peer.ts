@@ -49,7 +49,6 @@ export class Peer extends User {
         data.message = text;
         data.last = true;
       }
-      console.log(data);
       this.channel.send(JSON.stringify({type: "file", data: data})); // use JSON.stringify for chrome!
 
       var remainingDataURL = text.slice(data.message.length);

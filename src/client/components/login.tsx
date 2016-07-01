@@ -16,7 +16,8 @@ export class Login extends Component<LoginProps, LoginState> {
     return this.getInputField().value;
   }
 
-  private handleSubmit() {
+  private handleSubmit(event: Event) {
+    event.preventDefault();
     const value: string = this.getInputValue();
     if (value === "") {
       return;
@@ -26,10 +27,21 @@ export class Login extends Component<LoginProps, LoginState> {
 
   render() {
     return (
-      <div>
-        <h2>Enter name</h2>
-        <input type="text" ref="name-input"/>
-        <button onClick={this.handleSubmit.bind(this)}>Submit</button>
+      <div className="container">
+        <div className="row">
+          <div className="col-xs-12">
+            <form onSubmit={this.handleSubmit.bind(this)}>
+              <div className="form-group">
+                <label htmlFor="name">Name:</label>
+                <input id="name" type="text" ref="name-input" className="form-control"/>
+              </div>
+              <button className="btn btn-success btn-block"
+                      onClick={this.handleSubmit.bind(this)}>
+                Submit
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     );
   }

@@ -59,6 +59,23 @@ export class Chat extends Component<ChatProps, ChatState> {
     return this.getMessageInput().value;
   }
 
+  private setInputValue(value: string) {
+    this.getMessageInput().value = value;
+  }
+
+
+  /**
+   * Handle textarea key down event
+   * @param event
+   */
+  private keyDown(event: KeyboardEvent) {
+    const key = event.keyCode;
+    if (key === 13) {
+      event.preventDefault();
+      this.sendMessage();
+    }
+  }
+
   /**
    * Handle message click event
    * @param message - Message object
@@ -68,17 +85,17 @@ export class Chat extends Component<ChatProps, ChatState> {
     if (file) {
       const fileName = file.name;
       var fileDataURL = file.data; // it is Data URL...can be saved to disk
-      var save = document.createElement('a');
+      var save: HTMLAnchorElement = document.createElement('a');
       save.href = fileDataURL;
       save.target = '_blank';
-      save.download = fileName || fileDataURL;
+      (save as any).download = fileName || fileDataURL;
 
       var evt = document.createEvent('MouseEvents');
       evt.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
 
       save.dispatchEvent(evt);
 
-      (window.URL || window.webkitURL).revokeObjectURL(save.href);
+      (window.URL || (window as any).webkitURL).revokeObjectURL(save.href);
     }
   }
 
@@ -88,6 +105,7 @@ export class Chat extends Component<ChatProps, ChatState> {
       return;
     }
     this.messageStore.sendMessage(text);
+    this.setInputValue("");
   }
 
   private sendFile(event: Event) {
@@ -102,20 +120,61 @@ export class Chat extends Component<ChatProps, ChatState> {
   render() {
     return (
       <div>
-        <h2>Chat</h2>
-        <div>
-          <textarea ref="message-input" id="" cols="30" rows="10"/>
-          <button onClick={this.sendMessage.bind(this)}>Send message</button>
-          <input type="file" onChange={this.sendFile.bind(this)}/>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-xs-3">
+              <div className="panel panel-default" style={{height: "400px"}}>
+                <div className="panel-heading">
+                  <h3>Users</h3>
+                </div>
+                <div className="panel-body">
+                  {this.getUsers().map((user: User, index: number) =>
+                    <p key={index}>{user.getName()}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="col-xs-9">
+              <div className="panel panel-default" style={{height: "400px"}}>
+                <div className="panel-heading">
+                  <h3>Messages</h3>
+                </div>
+                <div className="panel-body">
+                  {this.getMessages().map((message: Message, index: number) => {
+                    return (
+                      <p style={message.file != null ? {
+                        color: "lightblue",
+                        fontWeight: "bold",
+                        textDecoration: "underline",
+                        cursor: "pointer"} : {}}
+                         key={index} onClick={this.onMessageClick.bind(this, message)}>
+                        {message.user.name}: {message.text}
+                      </p>
+                    );
+                    })}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-xs-12">
+              <div className="panel panel-default">
+                <div className="panel-body">
+                  <textarea style={{width: "100%", resize: "none"}} ref="message-input"
+                            onKeyDown={this.keyDown.bind(this)}/>
+                  <div>
+                    <button style={{display: "inline", marginRight: "10px"}} onClick={this.sendMessage.bind(this)}
+                            className="btn btn-primary">
+                      Send message
+                    </button>
+                    <input style={{display: "inline"}} type="file"
+                           onChange={this.sendFile.bind(this)} className="btn btn-primary"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <h3>Users</h3>
-        {this.getUsers().map((user: User, index: number) =>
-          <p key={index}>{user.getName()}</p>)}
-        <h3>Messages</h3>
-        {this.getMessages().map((message: Message, index: number) =>
-          <p key={index} onClick={this.onMessageClick.bind(this, message)}>
-            {message.user.name}: {message.text}
-          </p>)}
       </div>
     );
   }

@@ -34,7 +34,7 @@ export class MessageStore extends AbstractStore<Array<Message>> {
   sendMessage(message: string) {
     this.addMessage({
       text: message,
-      user: this.userStore.getUser(),
+      user: this.userStore.getUser().toUserInfo(),
       type: MessageType.Text
     });
     this.peerStore.getPeers()
@@ -53,7 +53,7 @@ export class MessageStore extends AbstractStore<Array<Message>> {
       const result = (event.target as any).result;
       this.addMessage({
         text: file.name,
-        user: this.userStore.getUser(),
+        user: this.userStore.getUser().toUserInfo(),
         type: MessageType.File,
         file: {
           data: result,

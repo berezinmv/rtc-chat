@@ -5,7 +5,7 @@ class UserStorageImpl {
 
   /**
    * Add new user or replace existing if user with that id already exist
-   * @param user -
+   * @param user - User
    */
   addUser(user: User): void {
     this.users = this.users

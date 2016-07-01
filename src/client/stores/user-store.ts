@@ -34,9 +34,4 @@ export class UserStore extends AbstractStore<User> {
   getUser(): User {
     return this.user;
   }
-
-  getUserId(): string {
-    const user = this.getUser();
-    return user ? user.getId() : null;
-  }
 }

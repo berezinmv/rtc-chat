@@ -59,12 +59,44 @@ export class Chat extends Component<ChatProps, ChatState> {
     return this.getMessageInput().value;
   }
 
+  /**
+   * Handle message click event
+   * @param message - Message object
+   */
+  private onMessageClick(message: Message) {
+    const file = message.file;
+    if (file) {
+      const fileName = file.name;
+      var fileDataURL = file.data; // it is Data URL...can be saved to disk
+      var save = document.createElement('a');
+      save.href = fileDataURL;
+      save.target = '_blank';
+      save.download = fileName || fileDataURL;
+
+      var evt = document.createEvent('MouseEvents');
+      evt.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+
+      save.dispatchEvent(evt);
+
+      (window.URL || window.webkitURL).revokeObjectURL(save.href);
+    }
+  }
+
   private sendMessage() {
     const text = this.getInputValue();
     if (text === "") {
       return;
     }
     this.messageStore.sendMessage(text);
+  }
+
+  private sendFile(event: Event) {
+    const target = (event.target) as HTMLInputElement;
+    const file = target.files[0];
+    if (file) {
+      this.messageStore.sendFile(file);
+    }
+    target.value = "";
   }
 
   render() {
@@ -74,13 +106,16 @@ export class Chat extends Component<ChatProps, ChatState> {
         <div>
           <textarea ref="message-input" id="" cols="30" rows="10"/>
           <button onClick={this.sendMessage.bind(this)}>Send message</button>
+          <input type="file" onChange={this.sendFile.bind(this)}/>
         </div>
         <h3>Users</h3>
         {this.getUsers().map((user: User, index: number) =>
           <p key={index}>{user.getName()}</p>)}
         <h3>Messages</h3>
         {this.getMessages().map((message: Message, index: number) =>
-          <p key={index}>{message.user.name}: {message.text}</p>)}
+          <p key={index} onClick={this.onMessageClick.bind(this, message)}>
+            {message.user.name}: {message.text}
+          </p>)}
       </div>
     );
   }

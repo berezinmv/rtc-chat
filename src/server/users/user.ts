@@ -24,6 +24,10 @@ export class User {
     return this.name;
   }
 
+  /**
+   * Get UserInfo object
+   * @returns {UserInfo}
+   */
   toUserInfo(): UserInfo {
     return {id: this.id, name: this.name};
   }

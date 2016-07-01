@@ -2,7 +2,6 @@ import {Peer} from "../peers/peer";
 import {AbstractStore} from "./abstract-store";
 import {WsService} from "../services/ws-service";
 import {PeerFactory} from "../peers/peer-factory";
-import {IceCandidate, SessionDescription} from "../utils";
 import {UserInfo} from "../../server/users/user";
 
 export class PeerStore extends AbstractStore<Array<Peer>> {
@@ -30,7 +29,6 @@ export class PeerStore extends AbstractStore<Array<Peer>> {
             console.log("setLocal");
           }, (err: DOMError) => console.error(err));
         }, (err: DOMError) => console.error(err));
-        this.addPeer(peer);
       })
       .on("leave", (peerId: string) => {
         const peer = this.removePeer(peerId);
@@ -38,36 +36,62 @@ export class PeerStore extends AbstractStore<Array<Peer>> {
       })
       .on("webrtc", (message: string) => {
         const {type, user, data} = JSON.parse(message);
-        const userId = user.id;
-        let peer;
         switch (type) {
           case "candidate":
-            peer = PeerFactory.createRemote(user);
-            peer.getConnection().addIceCandidate(new IceCandidate(data))
-              .then(() => {
-                console.log("addIceCandidate");
-              }, (err: DOMError) => console.error(err));
+            this.handleCandidate(data, user);
             break;
           case "offer":
-            peer = PeerFactory.createRemote(user);
-            const connection = peer.getConnection();
-            connection.setRemoteDescription(new SessionDescription(data)).then(() => {
-              console.log("setRemote");
-              connection.createAnswer().then((description: RTCSessionDescription) => {
-                connection.setLocalDescription(description).then(() => {
-                  console.log("setLocal");
-                }, (err: DOMError) => console.error(err));
-              }, (err: DOMError) => console.error(err));
-            }, (err: DOMError) => console.error(err));
+            this.handleOffer(data, user);
             break;
           case "answer":
-            this.getPeer(userId).getConnection()
-              .setRemoteDescription(new SessionDescription(data))
-              .then(() => {
-                console.log("setRemote");
-              });
+            this.handleAnswer(data, user);
             break;
         }
+      });
+  }
+
+  /**
+   * Handle candidate request
+   * @param data - Request data
+   * @param user - User info
+   */
+  protected handleCandidate(data: any, user: UserInfo) {
+    const peer = PeerFactory.createRemote(user);
+    peer.getConnection().addIceCandidate(new RTCIceCandidate(data))
+      .then(() => {
+        console.log("addIceCandidate");
+      }, (err: DOMError) => console.error(err));
+  }
+
+  /**
+   * Handle offer request
+   * @param data - Request data
+   * @param user - User info
+   */
+  protected handleOffer(data: any, user: UserInfo) {
+    const peer = PeerFactory.createRemote(user);
+    const connection = peer.getConnection();
+    connection.setRemoteDescription(new RTCSessionDescription(data)).then(() => {
+      console.log("setRemote");
+      connection.createAnswer().then((description: RTCSessionDescription) => {
+        connection.setLocalDescription(description).then(() => {
+          console.log("setLocal");
+        }, (err: DOMError) => console.error(err));
+      }, (err: DOMError) => console.error(err));
+    }, (err: DOMError) => console.error(err));
+
+  }
+
+  /**
+   * Handle answer request
+   * @param data - Request data
+   * @param user - User info
+   */
+  protected handleAnswer(data: any, user: UserInfo) {
+    this.getPeer(user.id).getConnection()
+      .setRemoteDescription(new RTCSessionDescription(data))
+      .then(() => {
+        console.log("setRemote");
       });
   }
 
@@ -79,13 +103,13 @@ export class PeerStore extends AbstractStore<Array<Peer>> {
     return this.peers;
   }
 
+  getPeer(peerId: string): Peer {
+    return this.peers.filter((peer: Peer) => peer.getId() === peerId)[0];
+  }
+
   addPeer(peer: Peer) {
     this.peers.push(peer);
     this.updateSubscribers();
-  }
-
-  getPeer(peerId: string): Peer {
-    return this.peers.filter((peer: Peer) => peer.getId() === peerId)[0];
   }
 
   removePeer(peerId: string): Peer {

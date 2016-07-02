@@ -41,7 +41,7 @@ export class Peer extends User {
   sendFile(dataUrl: string, fileName: string) {
     const chunkLength = 1000;
     const onReadAsDataUrl = (text: string) => {
-      var data: any = {fileName: fileName};
+      const data: any = {fileName: fileName};
 
       if (text.length > chunkLength) {
         data.message = text.slice(0, chunkLength);
@@ -49,12 +49,14 @@ export class Peer extends User {
         data.message = text;
         data.last = true;
       }
-      this.channel.send(JSON.stringify({type: "file", data: data})); // use JSON.stringify for chrome!
+      this.channel.send(JSON.stringify({type: "file", data: data}));
 
-      var remainingDataURL = text.slice(data.message.length);
-      if (remainingDataURL.length) setTimeout(() => {
-        onReadAsDataUrl(remainingDataURL); // continue transmitting
-      }, 500);
+      const remainingDataURL = text.slice(data.message.length);
+      if (remainingDataURL.length) {
+        setTimeout(() => {
+          onReadAsDataUrl(remainingDataURL);
+        }, 50);
+      }
     };
     onReadAsDataUrl(dataUrl);
   }
